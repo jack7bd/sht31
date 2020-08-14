@@ -1,0 +1,17 @@
+diff --git a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+index e833915a7..fbf9c2bb5 100644
+--- a/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
++++ b/arch/arm/boot/dts/bcm2710-rpi-3-b.dts
+@@ -151,6 +151,12 @@
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&i2c1_pins>;
+ 	clock-frequency = <100000>;
++
++	sht31@44 {
++		compatible = "sht31";
++		reg = <0x44>;
++		rst-gpio = <&gpio 4 GPIO_ACTIVE_LOW>;
++	};
+ };
+ 
+ &i2c2 {
