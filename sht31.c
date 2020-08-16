@@ -98,7 +98,7 @@ static int sht31_probe(struct i2c_client *dev, const struct i2c_device_id *i2c_d
     sht31->dev = dev;
     i2c_set_clientdata(dev, sht31);
 
-    sht31->rst = gpiod_get(&dev->dev, "rst", 0);
+    sht31->rst = devm_gpiod_get(&dev->dev, "rst", 0);
     if (IS_ERR(sht31->rst)) {
         dev_err(&dev->dev, "failed to allocate rst\n");
         err = PTR_ERR(sht31->rst);
@@ -108,7 +108,7 @@ static int sht31_probe(struct i2c_client *dev, const struct i2c_device_id *i2c_d
     err = device_create_file(&dev->dev, &dev_attr_temperature);
     if (err) {
         dev_err(&dev->dev, "failed to create temperature attr file\n");
-        goto out_put_rst;
+        goto out_ret_err;
     }
 
     err = device_create_file(&dev->dev, &dev_attr_humidity);
@@ -128,8 +128,6 @@ static int sht31_probe(struct i2c_client *dev, const struct i2c_device_id *i2c_d
 
 out_remove_temp_attr_file:
     device_remove_file(&dev->dev, &dev_attr_temperature);
-out_put_rst:
-    gpiod_put(sht31->rst);
 out_ret_err:
     return err;
 }
@@ -141,7 +139,6 @@ static int sht31_remove(struct i2c_client *dev)
     mutex_destroy(&sht31->meas_mutex);
     device_remove_file(&dev->dev, &dev_attr_humidity);
     device_remove_file(&dev->dev, &dev_attr_temperature);
-    gpiod_put(sht31->rst);
 
     dev_info(&dev->dev, "removed\n");
     return 0;
